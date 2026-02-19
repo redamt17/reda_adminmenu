@@ -15,7 +15,7 @@ Config.AllowedGroups = {
 -- معرفات مسموح لها دائمًا
 Config.AllowedIdentifiers = {
   "license:",
-  "discord:1050041378404569098"
+  "discord:"
 }
 
 -- يسمح للمعرفات اعلاه بتجاوز صلاحيات الاكشن
