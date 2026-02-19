@@ -1,0 +1,2670 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FiveM Admin Menu</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    :root {
+      --bg-primary: #0a0a0f;
+      --bg-secondary: #12121a;
+      --bg-tertiary: #1a1a24;
+      --bg-card: #16161f;
+      --accent-primary: #3b82f6;
+      --accent-secondary: #2563eb;
+      --accent-glow: rgba(59, 130, 246, 0.3);
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --info: #3b82f6;
+    }
+
+    body.white-mode {
+      --bg-primary: #f6f8fc;
+      --bg-secondary: #eef2f8;
+      --bg-tertiary: #e5ebf5;
+      --bg-card: #ffffff;
+      --accent-primary: #2563eb;
+      --accent-secondary: #1d4ed8;
+      --accent-glow: rgba(37, 99, 235, 0.25);
+      --text-primary: #0f172a;
+      --text-secondary: #334155;
+      --text-muted: #64748b;
+      --border-color: rgba(15, 23, 42, 0.12);
+      --success: #059669;
+      --warning: #d97706;
+      --danger: #dc2626;
+      --info: #2563eb;
+    }
+
+    body.white-mode .admin-container {
+      background:
+        radial-gradient(1200px 600px at -10% -30%, rgba(37, 99, 235, 0.10), transparent 55%),
+        radial-gradient(900px 500px at 120% 110%, rgba(37, 99, 235, 0.08), transparent 50%),
+        linear-gradient(145deg, var(--bg-primary), var(--bg-secondary));
+      border: 1px solid rgba(15, 23, 42, 0.10);
+      box-shadow: 0 20px 55px rgba(15, 23, 42, 0.18);
+    }
+
+    body.white-mode .sidebar {
+      background: linear-gradient(180deg, #f8fbff, #edf3fb);
+      border-right: 1px solid rgba(15, 23, 42, 0.10);
+    }
+
+    body.white-mode .sidebar-header {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.12), rgba(37, 99, 235, 0.03));
+    }
+
+    body.white-mode .main-content {
+      background: transparent;
+    }
+
+    body.white-mode .header {
+      background: rgba(255, 255, 255, 0.72);
+      border-bottom: 1px solid rgba(15, 23, 42, 0.10);
+      backdrop-filter: blur(8px);
+    }
+
+    body.white-mode .card,
+    body.white-mode .panel,
+    body.white-mode .table-container,
+    body.white-mode .modal,
+    body.white-mode .dropdown-menu,
+    body.white-mode .settings-menu {
+      background: rgba(255, 255, 255, 0.94);
+      border-color: rgba(15, 23, 42, 0.12);
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+    }
+
+    body.white-mode .nav-item:hover {
+      background: rgba(37, 99, 235, 0.10);
+    }
+
+    body.white-mode .nav-item.active {
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.20), rgba(37, 99, 235, 0.08));
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.16);
+    }
+
+    body.white-mode .search-box,
+    body.white-mode .filter-select,
+    body.white-mode .grid-btn,
+    body.white-mode .quick-btn,
+    body.white-mode .action-btn,
+    body.white-mode .header-btn,
+    body.white-mode .profile-row,
+    body.white-mode .profile-tab,
+    body.white-mode .vehicle-card,
+    body.white-mode .item-card,
+    body.white-mode .location-item,
+    body.white-mode .modal-input,
+    body.white-mode .modal-select {
+      background: #f8fbff;
+      border-color: rgba(15, 23, 42, 0.12);
+    }
+
+    body.white-mode tr:hover {
+      background: rgba(37, 99, 235, 0.08);
+    }
+
+    body.white-mode .stat-card {
+      background: linear-gradient(180deg, #ffffff, #f7faff);
+      border-color: rgba(37, 99, 235, 0.15);
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.07);
+    }
+
+    body.white-mode .item-delete {
+      background: rgba(220, 38, 38, 0.08);
+      border-color: rgba(220, 38, 38, 0.28);
+    }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: transparent;
+      color: var(--text-primary);
+      overflow: hidden;
+    }
+    
+    .admin-container {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 95%;
+      max-width: 1150px;
+      height: 85%;
+      max-height: 850px;
+      background: linear-gradient(145deg, var(--bg-primary), var(--bg-secondary));
+      border-radius: 16px;
+      border: none;
+      box-shadow: none;
+      display: none;
+      overflow: hidden;
+      opacity: 0;
+      animation: fadeIn 0.3s ease-out forwards;
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translate(-50%, -48%);
+      }
+      to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+      }
+    }
+
+    @keyframes fadeOut {
+      from {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+      }
+      to {
+        opacity: 0;
+        transform: translate(-50%, -48%);
+      }
+    }
+
+    .admin-container.closing {
+      animation: fadeOut 0.25s ease-in forwards;
+    }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    /* Sidebar */
+    .sidebar {
+      width: 220px;
+      background: linear-gradient(180deg, var(--bg-tertiary), var(--bg-secondary));
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+    
+    .sidebar-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border-color);
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.05));
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .logo-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .logo-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    
+    .logo-text {
+      font-size: 18px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--text-primary), var(--accent-primary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .logo-sub {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    
+    .sidebar-nav {
+      flex: 1;
+      padding: 12px 10px;
+      overflow-y: auto;
+    }
+
+    .sidebar-footer {
+      padding: 10px 12px 14px;
+      border-top: 1px solid var(--border-color);
+      background: linear-gradient(180deg, transparent, rgba(37, 99, 235, 0.06));
+    }
+
+    .rights-badge {
+      font-size: 10px;
+      line-height: 1.5;
+      color: var(--text-muted);
+      text-align: center;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+    }
+
+    .rights-badge strong {
+      color: var(--text-secondary);
+      font-weight: 700;
+    }
+    
+    .sidebar-nav::-webkit-scrollbar {
+      width: 4px;
+    }
+    
+    .sidebar-nav::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    .sidebar-nav::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 2px;
+    }
+    
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .nav-item:hover {
+      background: rgba(59, 130, 246, 0.1);
+      color: var(--text-primary);
+    }
+    
+    .nav-item.active {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.15));
+      color: var(--text-primary);
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+    }
+    
+    .nav-item.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: linear-gradient(180deg, var(--accent-primary), var(--accent-secondary));
+      border-radius: 0 2px 2px 0;
+    }
+    
+    .nav-item i {
+      width: 20px;
+      text-align: center;
+      font-size: 14px;
+    }
+    
+    .nav-item span {
+      font-size: 13px;
+      font-weight: 500;
+    }
+    
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--bg-primary);
+    }
+    
+    .header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(18, 18, 26, 0.5);
+      backdrop-filter: blur(10px);
+      position: relative;
+      z-index: 1200;
+    }
+    
+    .header-left h1 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    
+    .header-left p {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: relative;
+      z-index: 1201;
+    }
+    
+    .header-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .header-btn:hover {
+      background: var(--accent-primary);
+      color: white;
+      border-color: var(--accent-primary);
+    }
+    
+    .close-btn {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: var(--danger);
+    }
+    
+    .close-btn:hover {
+      background: var(--danger);
+      color: white;
+    }
+
+    .settings-menu {
+      position: absolute;
+      top: 46px;
+      right: 48px;
+      min-width: 190px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+      padding: 8px;
+      display: none;
+      z-index: 3000;
+    }
+
+    .settings-menu.active {
+      display: block;
+    }
+
+    .settings-item {
+      width: 100%;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-secondary);
+      border-radius: 8px;
+      padding: 9px 10px;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .settings-item:hover {
+      background: rgba(59, 130, 246, 0.12);
+      border-color: rgba(59, 130, 246, 0.35);
+      color: var(--text-primary);
+    }
+    
+    .content-area {
+      flex: 1;
+      padding: 20px 24px;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .rights-watermark {
+      position: sticky;
+      bottom: 0;
+      margin-top: 14px;
+      margin-left: auto;
+      width: fit-content;
+      font-size: 10px;
+      color: var(--text-muted);
+      background: rgba(0, 0, 0, 0.16);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 6px 10px;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+    }
+    
+    .content-area::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .content-area::-webkit-scrollbar-track {
+      background: var(--bg-secondary);
+    }
+    
+    .content-area::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 3px;
+    }
+    
+    .content-area::-webkit-scrollbar-thumb:hover {
+      background: var(--accent-primary);
+    }
+    
+    /* Section */
+    .section {
+      display: none;
+      animation: slideIn 0.3s ease-out;
+    }
+    
+    .section.active {
+      display: block;
+    }
+    
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .section-title i {
+      color: var(--accent-primary);
+    }
+    
+    /* Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    
+    .card-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .card-title i {
+      color: var(--accent-primary);
+      font-size: 12px;
+    }
+    
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    
+    .stat-card {
+      background: linear-gradient(145deg, var(--bg-card), var(--bg-tertiary));
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+    }
+    
+    .stat-card.success::before {
+      background: linear-gradient(90deg, var(--success), #34d399);
+    }
+    
+    .stat-card.warning::before {
+      background: linear-gradient(90deg, var(--warning), #fbbf24);
+    }
+    
+    .stat-card.danger::before {
+      background: linear-gradient(90deg, var(--danger), #f87171);
+    }
+    
+    .stat-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(59, 130, 246, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+      color: var(--accent-primary);
+    }
+    
+    .stat-card.success .stat-icon {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+    }
+    
+    .stat-card.warning .stat-icon {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--warning);
+    }
+    
+    .stat-card.danger .stat-icon {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--danger);
+    }
+    
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    /* Quick Actions */
+    .quick-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .quick-btn {
+      padding: 10px 18px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .quick-btn:hover {
+      background: var(--accent-primary);
+      color: white;
+      border-color: var(--accent-primary);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px var(--accent-glow);
+    }
+    
+    .quick-btn.danger:hover {
+      background: var(--danger);
+      border-color: var(--danger);
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+    }
+    
+    .quick-btn.success:hover {
+      background: var(--success);
+      border-color: var(--success);
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    }
+    
+    /* Table */
+    .table-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    
+    .table-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(26, 26, 36, 0.5);
+    }
+    
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 8px 14px;
+      width: 280px;
+    }
+    
+    .search-box input {
+      border: none;
+      background: transparent;
+      color: var(--text-primary);
+      font-size: 13px;
+      outline: none;
+      width: 100%;
+    }
+    
+    .search-box input::placeholder {
+      color: var(--text-muted);
+    }
+    
+    .search-box i {
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+    
+    .filter-select {
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      font-size: 13px;
+      cursor: pointer;
+      outline: none;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    th {
+      text-align: left;
+      padding: 12px 16px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border-color);
+      background: rgba(18, 18, 26, 0.3);
+    }
+    
+    td {
+      padding: 12px 16px;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    tr:hover {
+      background: rgba(59, 130, 246, 0.05);
+    }
+    
+    tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .player-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .player-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .player-name {
+      font-weight: 500;
+    }
+    
+    .player-id {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .profile-card {
+      background: linear-gradient(180deg, rgba(20, 20, 28, 0.95), rgba(18, 18, 26, 0.95));
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 18px;
+      margin-top: 18px;
+    }
+
+    .profile-header {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .profile-avatar {
+      width: 110px;
+      height: 110px;
+      border-radius: 14px;
+      background: rgba(59, 130, 246, 0.12);
+      border: 1px solid rgba(59, 130, 246, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 42px;
+      color: var(--accent-primary);
+      position: relative;
+      overflow: hidden;
+    }
+
+    #profileAvatarImg {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    .profile-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .profile-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 6px 10px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.04);
+      margin-bottom: 8px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .profile-row strong {
+      color: var(--text-primary);
+      font-weight: 600;
+      margin-right: 6px;
+    }
+
+    .profile-info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 10px;
+    }
+
+    @media (max-width: 900px) {
+      .profile-info-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .copy-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .profile-tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin: 16px 0;
+    }
+
+    .profile-tab {
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .profile-tab.active {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(37, 99, 235, 0.2));
+      color: var(--text-primary);
+      border-color: rgba(59, 130, 246, 0.4);
+    }
+
+    .profile-panel {
+      display: none;
+    }
+
+    .profile-panel.active {
+      display: block;
+    }
+
+    .item-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 12px;
+    }
+
+    .item-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+      text-align: center;
+    }
+
+    .item-img {
+      width: 54px;
+      height: 54px;
+      object-fit: contain;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 6px;
+    }
+
+    .item-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .item-count {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .item-delete {
+      font-size: 11px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      background: rgba(239, 68, 68, 0.12);
+      color: var(--danger);
+      cursor: pointer;
+    }
+
+    .vehicle-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .vehicle-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .vehicle-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .vehicle-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .vehicle-spawn {
+      font-size: 11px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      cursor: pointer;
+    }
+    
+    .status-badge {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    
+    .status-badge.online {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+    }
+    
+    .status-badge.offline {
+      background: rgba(100, 116, 139, 0.15);
+      color: var(--text-muted);
+    }
+    
+    .status-badge.banned {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--danger);
+    }
+    
+    .action-btns {
+      display: flex;
+      gap: 6px;
+      flex-wrap: nowrap;
+    }
+    
+    .action-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 11px;
+    }
+    
+    .action-btn:hover {
+      background: var(--accent-primary);
+      color: white;
+      border-color: var(--accent-primary);
+    }
+    
+    .action-btn.danger:hover {
+      background: var(--danger);
+      border-color: var(--danger);
+    }
+    
+    .action-btn.success:hover {
+      background: var(--success);
+      border-color: var(--success);
+    }
+    
+    .action-btn.warning:hover {
+      background: var(--warning);
+      border-color: var(--warning);
+    }
+
+    /* Offline Characters table: keep full actions visible */
+    #offlineCharacters .table-container {
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    #offlineCharacters table {
+      min-width: 980px;
+    }
+
+    #offlineCharacters th:nth-child(3),
+    #offlineCharacters td:nth-child(3) {
+      max-width: 300px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    #offlineCharacters th:last-child,
+    #offlineCharacters td:last-child {
+      min-width: 220px;
+      white-space: nowrap;
+    }
+
+    /* Offline Ban List table: keep all columns visible */
+    #offlineBans .table-container {
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    #offlineBans table {
+      min-width: 1050px;
+    }
+
+    #offlineBans th:nth-child(1),
+    #offlineBans td:nth-child(1),
+    #offlineBans th:nth-child(3),
+    #offlineBans td:nth-child(3) {
+      max-width: 320px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    #offlineBans th:nth-child(2),
+    #offlineBans td:nth-child(2) {
+      max-width: 220px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    #offlineBans th:nth-child(4),
+    #offlineBans td:nth-child(4) {
+      min-width: 160px;
+      white-space: nowrap;
+    }
+
+    #offlineBans th:last-child,
+    #offlineBans td:last-child {
+      min-width: 140px;
+      white-space: nowrap;
+    }
+
+    /* Resource table: keep actions visible */
+    #devtools .table-container {
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    #resourceMonitorTable {
+      min-width: 860px;
+      table-layout: fixed;
+    }
+
+    #resourceMonitorTable th:nth-child(1),
+    #resourceMonitorTable td:nth-child(1) {
+      width: 320px;
+      max-width: 320px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    #resourceMonitorTable th:nth-child(2),
+    #resourceMonitorTable td:nth-child(2) {
+      width: 170px;
+      max-width: 170px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    #resourceMonitorTable th:nth-child(3),
+    #resourceMonitorTable td:nth-child(3) {
+      width: 120px;
+      max-width: 120px;
+      white-space: nowrap;
+    }
+
+    #resourceMonitorTable th:nth-child(4),
+    #resourceMonitorTable td:nth-child(4) {
+      width: 170px;
+      max-width: 170px;
+      white-space: nowrap;
+      text-align: center;
+    }
+    
+    /* Button Grid */
+    .btn-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 10px;
+    }
+    
+    .grid-btn {
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .grid-btn i {
+      width: 16px;
+      text-align: center;
+      font-size: 11px;
+    }
+    
+    .grid-btn:hover {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.15));
+      color: var(--text-primary);
+      border-color: rgba(59, 130, 246, 0.3);
+      transform: translateY(-1px);
+    }
+    
+    .grid-btn.danger:hover {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: var(--danger);
+    }
+
+    .offline-group-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-muted);
+      margin: 4px 0 8px;
+    }
+    
+    .grid-btn.success:hover {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: rgba(16, 185, 129, 0.3);
+      color: var(--success);
+    }
+    
+    .grid-btn.warning:hover {
+      background: rgba(245, 158, 11, 0.15);
+      border-color: rgba(245, 158, 11, 0.3);
+      color: var(--warning);
+    }
+
+    /* Vehicle actions layout */
+    .vehicle-actions-panel {
+      align-self: start;
+    }
+
+    .vehicle-actions-grid {
+      grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+      gap: 10px;
+    }
+
+    .vehicle-actions-grid .grid-btn {
+      padding: 12px 13px;
+      font-size: 12px;
+      border-radius: 9px;
+      gap: 8px;
+    }
+
+    .vehicle-actions-grid .grid-btn i {
+      width: 16px;
+      font-size: 11px;
+    }
+    
+    /* Input Groups */
+    .input-group {
+      margin-bottom: 14px;
+    }
+    
+    .input-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+    
+    .input-group input,
+    .input-group select,
+    .input-group textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+    
+    .input-group input:focus,
+    .input-group select:focus,
+    .input-group textarea:focus {
+      border-color: var(--accent-primary);
+    }
+    
+    .input-group input::placeholder {
+      color: var(--text-muted);
+    }
+    
+    .input-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    
+    /* Panels */
+    .panel-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+    
+    .panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .panel.full-width {
+      grid-column: 1 / -1;
+    }
+    
+    .panel-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-color);
+      background: rgba(26, 26, 36, 0.5);
+    }
+    
+    .panel-title {
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .panel-title i {
+      color: var(--accent-primary);
+      font-size: 12px;
+    }
+    
+    .panel-body {
+      padding: 14px 16px;
+    }
+    
+    /* Logs */
+    .log-entry {
+      display: grid;
+      grid-template-columns: 100px 100px 1fr 100px auto;
+      gap: 12px;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 12px;
+      align-items: center;
+    }
+    
+    .log-entry:last-child {
+      border-bottom: none;
+    }
+    
+    .log-entry:hover {
+      background: rgba(59, 130, 246, 0.05);
+    }
+    
+    .log-timestamp {
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+    }
+    
+    .log-admin {
+      color: var(--accent-primary);
+      font-weight: 500;
+    }
+    
+    .log-action {
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    
+    .log-action.ban {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--danger);
+    }
+    
+    .log-action.kick {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--warning);
+    }
+    
+    .log-action.warn {
+      background: rgba(59, 130, 246, 0.15);
+      color: var(--info);
+    }
+    
+    .log-action.tp {
+      background: rgba(37, 99, 235, 0.15);
+      color: var(--accent-secondary);
+    }
+    
+    .log-target {
+      color: var(--text-secondary);
+    }
+    
+    .log-desc {
+      color: var(--text-muted);
+      font-size: 11px;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
+    
+    .empty-state i {
+      font-size: 40px;
+      margin-bottom: 12px;
+      opacity: 0.5;
+    }
+    
+    .empty-state p {
+      font-size: 13px;
+    }
+    
+    /* Location List */
+    .location-list {
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    
+    .location-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: var(--bg-secondary);
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .location-item:hover {
+      background: rgba(59, 130, 246, 0.1);
+    }
+    
+    .location-item:last-child {
+      margin-bottom: 0;
+    }
+    
+    .location-name {
+      font-size: 13px;
+      font-weight: 500;
+    }
+    
+    .location-coords {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: transparent;
+      backdrop-filter: none;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    
+    .modal-overlay.active {
+      display: flex;
+      opacity: 1;
+    }
+    
+    .modal {
+      background: var(--bg-secondary);
+      border: none;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 450px;
+      box-shadow: none;
+      transform: scale(0.95);
+      transition: transform 0.2s ease;
+    }
+    
+    .modal-overlay.active .modal {
+      transform: scale(1);
+    }
+    
+    .modal-header {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .modal-title {
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .modal-title i {
+      color: var(--accent-primary);
+    }
+    
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: none;
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--danger);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .modal-close:hover {
+      background: var(--danger);
+      color: white;
+    }
+    
+    .modal-body {
+      padding: 20px;
+    }
+    
+    .modal-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    
+    .modal-btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .modal-btn.cancel {
+      border: 1px solid var(--border-color);
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+    }
+    
+    .modal-btn.cancel:hover {
+      background: var(--bg-card);
+      color: var(--text-primary);
+    }
+    
+    .modal-btn.confirm {
+      border: none;
+      background: var(--accent-primary);
+      color: white;
+    }
+    
+    .modal-btn.confirm:hover {
+      background: var(--accent-secondary);
+    }
+    
+    .modal-btn.danger {
+      background: var(--danger);
+    }
+    
+    .modal-btn.danger:hover {
+      background: #dc2626;
+    }
+    
+    /* Toast Notifications */
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .toast {
+      padding: 14px 18px;
+      border-radius: 10px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 280px;
+      transform: translateX(120%);
+      transition: transform 0.3s ease;
+    }
+    
+    .toast.show {
+      transform: translateX(0);
+    }
+    
+    .toast-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .toast.success .toast-icon {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+    }
+    
+    .toast.warning .toast-icon {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--warning);
+    }
+    
+    .toast.error .toast-icon {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--danger);
+    }
+    
+    .toast-content {
+      flex: 1;
+    }
+    
+    .toast-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    
+    .toast-message {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    
+    /* Hidden */
+    .hidden {
+      display: none !important;
+    }
+    
+    /* Category Headers */
+    .category-header {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+      margin-top: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .category-header:first-child {
+      margin-top: 0;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 1200px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .panel-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .input-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    @media (max-width: 900px) {
+      .sidebar {
+        width: 60px;
+      }
+      
+      .sidebar-header {
+        padding: 15px;
+      }
+      
+      .logo-text {
+        display: none;
+      }
+      
+      .nav-item span {
+        display: none;
+      }
+      
+      .nav-item {
+        justify-content: center;
+        padding: 12px;
+      }
+      
+      .nav-item i {
+        font-size: 16px;
+      }
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full">
+  <div class="admin-container" id="adminMenu"><!-- Sidebar -->
+   <aside class="sidebar">
+    <div class="sidebar-header">
+     <div class="logo">
+      <div class="logo-icon"><img src="https://r2.fivemanage.com/5dNb5IfXLHmmadhqnoSnS/server-logo.png" alt="Server Logo">
+      </div>
+      <div>
+       <span class="logo-text" id="brandTitle">Admin Menu</span>
+       <div class="logo-sub" id="brandBy">By: Admin</div>
+      </div>
+     </div>
+    </div>
+    <nav class="sidebar-nav">
+     <div class="nav-item active" data-section="dashboard" data-online-nav="true"><i class="fas fa-chart-pie"></i> <span>Dashboard</span>
+     </div>
+     <div class="nav-item" data-section="players" data-online-nav="true"><i class="fas fa-users"></i> <span>Players</span>
+     </div>
+     <div class="nav-item" data-section="vehicles" data-online-nav="true"><i class="fas fa-car"></i> <span>Vehicles</span>
+     </div>
+     <div class="nav-item" data-section="teleport" data-online-nav="true"><i class="fas fa-location-dot"></i> <span>Teleport</span>
+     </div>
+     <div class="nav-item" data-section="economy" data-online-nav="true"><i class="fas fa-coins"></i> <span>Economy</span>
+     </div>
+     <div class="nav-item" data-section="world" data-online-nav="true"><i class="fas fa-globe"></i> <span>World</span>
+     </div>
+     <div class="nav-item" data-section="devtools" data-online-nav="true"><i class="fas fa-code"></i> <span>Resources</span>
+     </div>
+     <div class="nav-item" data-section="logs" data-online-nav="true"><i class="fas fa-scroll"></i> <span>Logs</span>
+     </div>
+     <div class="nav-item" data-section="offlinePlayers" data-offline-nav="true" style="display: none;"><i class="fas fa-user-clock"></i> <span>Offline Players</span>
+     </div>
+     <div class="nav-item" data-section="offlineCharacters" data-offline-nav="true" style="display: none;"><i class="fas fa-id-card"></i> <span>Characters</span>
+     </div>
+     <div class="nav-item" data-section="offlineBans" data-offline-nav="true" style="display: none;"><i class="fas fa-ban"></i> <span>Ban List</span>
+     </div>
+    </nav>
+    <div class="sidebar-footer">
+     <div class="rights-badge" id="brandBadge"><strong>Admin Menu</strong><br>By: Admin</div>
+    </div>
+   </aside><!-- Main Content -->
+   <main class="main-content">
+    <header class="header">
+     <div class="header-left">
+      <h1 id="pageTitle">Dashboard</h1>
+      <p id="serverName">Loading Server...</p>
+     </div>
+     <div class="header-right">
+      <div class="header-btn" id="settingsBtn" title="Settings"><i class="fas fa-cog"></i>
+      </div>
+      <div class="header-btn close-btn" id="closeBtn" title="Close (ESC)"><i class="fas fa-times"></i>
+      </div>
+      <div class="settings-menu" id="settingsMenu">
+       <button class="settings-item" type="button" data-setting-action="toggleOfflineMode"><i class="fas fa-user-clock"></i> Offline Mode: Off</button>
+       <button class="settings-item" type="button" data-setting-action="toggleWhiteMode"><i class="fas fa-circle-half-stroke"></i> White Mode: Off</button>
+      </div>
+     </div>
+    </header>
+    <div class="content-area"><!-- Dashboard Section -->
+     <section class="section active" id="dashboard">
+      <div class="stats-grid">
+       <div class="stat-card success">
+        <div class="stat-icon"><i class="fas fa-users"></i>
+        </div>
+        <div class="stat-value" id="onlinePlayers">
+         --
+        </div>
+        <div class="stat-label">
+         Online Players
+        </div>
+       </div>
+       <div class="stat-card">
+        <div class="stat-icon"><i class="fas fa-user-shield"></i>
+        </div>
+        <div class="stat-value" id="activeStaff">
+         --
+        </div>
+        <div class="stat-label">
+         Active Staff
+        </div>
+       </div>
+       <div class="stat-card warning">
+        <div class="stat-icon"><i class="fas fa-user-group"></i>
+        </div>
+        <div class="stat-value" id="totalPlayers">
+         --
+        </div>
+        <div class="stat-label">
+         Total Players
+        </div>
+       </div>
+       <div class="stat-card danger">
+        <div class="stat-icon"><i class="fas fa-gavel"></i>
+        </div>
+        <div class="stat-value" id="activeBans">
+         --
+        </div>
+        <div class="stat-label">
+         Active Bans
+        </div>
+       </div>
+      </div>
+      <div class="card">
+       <div class="card-header">
+        <div class="card-title"><i class="fas fa-bolt"></i> Quick Actions
+        </div>
+       </div>
+       <div class="quick-actions"><button class="quick-btn" onclick="showToast('success', 'Action', 'Server announcement sent')"> <i class="fas fa-bullhorn"></i> Announce </button> <button class="quick-btn" onclick="navigateTo('players')"> <i class="fas fa-users"></i> View Players </button> <button class="quick-btn success" onclick="showToast('success', 'Teleport', 'Teleported to marker')"> <i class="fas fa-location-arrow"></i> TP to Marker </button> <button class="quick-btn" onclick="navigateTo('vehicles')"> <i class="fas fa-car"></i> Spawn Vehicle </button> <button class="quick-btn danger" onclick="showModal('confirm', 'Clear Area', 'Delete all vehicles in the area?')"> <i class="fas fa-trash"></i> Clear Area </button> <button class="quick-btn" onclick="showToast('success', 'Copied', 'Coordinates copied to clipboard')"> <i class="fas fa-copy"></i> Copy Coords </button>
+       </div>
+      </div>
+      <div class="card">
+       <div class="card-header">
+        <div class="card-title"><i class="fas fa-user-shield"></i> Admin Commands
+        </div>
+       </div>
+       <div class="btn-grid" id="dashboardAdminCommands">
+        <button class="grid-btn" data-self="noclip"> <i class="fas fa-arrow-up-right-dots"></i> No Clip </button>
+        <button class="grid-btn success" data-self="god"> <i class="fas fa-shield"></i> God Mode </button>
+        <button class="grid-btn" data-self="invisible"> <i class="fas fa-ghost"></i> Invisible </button>
+        <button class="grid-btn" data-self="ammo"> <i class="fas fa-infinity"></i> Infinite Ammo </button>
+        <button class="grid-btn" data-self="tpMarker"> <i class="fas fa-location-arrow"></i> TP to Marker </button>
+        <button class="grid-btn" data-self="copyCoords"> <i class="fas fa-copy"></i> Copy Coords </button>
+        <button class="grid-btn" data-self="fixVehicle"> <i class="fas fa-screwdriver-wrench"></i> Fix Vehicle </button>
+        <button class="grid-btn danger" data-self="deleteVehicle"> <i class="fas fa-trash"></i> Delete Vehicle </button>
+        <button class="grid-btn" data-self="flipVehicle"> <i class="fas fa-arrow-rotate-right"></i> Flip Vehicle </button>
+       <button class="grid-btn success" data-self="fullHeal"> <i class="fas fa-heart"></i> Heal </button>
+       <button class="grid-btn success" data-self="fullArmor"> <i class="fas fa-shield-halved"></i> Full Armor </button>
+       <button class="grid-btn success" data-self="revive"> <i class="fas fa-heart-pulse"></i> Revive </button>
+       <button class="grid-btn" data-action="adminCar"> <i class="fas fa-car"></i> Admin Car </button>
+       <button class="grid-btn" data-action="checkPerms"> <i class="fas fa-key"></i> Check Perms </button>
+      </div>
+      </div>
+      <div class="card">
+       <div class="card-header">
+        <div class="card-title"><i class="fas fa-user-tie"></i> Admin Info
+        </div>
+       </div>
+       <div style="display: flex; gap: 20px; align-items: center;">
+        <div class="player-avatar" style="width: 50px; height: 50px; font-size: 18px;"><i class="fas fa-user"></i>
+        </div>
+        <div>
+         <div style="font-weight: 600; font-size: 16px;" id="adminName">
+          Admin User
+         </div>
+         <div style="color: var(--text-muted); font-size: 13px;" id="adminRoleDisplay">
+          Loading Role...
+         </div>
+         <div style="display:flex; align-items:center; gap:8px; margin-top: 6px;">
+          <div id="adminDutyStatus" style="color: var(--text-muted); font-size: 12px;">
+           Off Duty
+          </div>
+          <button class="quick-btn" id="adminDutyBtn" style="padding: 6px 10px; font-size: 11px;">
+           Go On Duty
+          </button>
+         </div>
+        </div>
+       </div>
+      </div>
+     </section><!-- Players Section -->
+     <section class="section" id="players">
+      <div id="playerListView">
+      <div class="table-container" style="margin-bottom: 20px;">
+       <div class="table-header">
+        <div class="search-box"><i class="fas fa-search"></i> <input type="text" placeholder="Search players...">
+        </div>
+        <div style="display: flex; gap: 10px;">
+         <select class="filter-select"> <option>All Players</option> <option>Online</option> <option>Staff Only</option> </select>
+         <select class="filter-select"> <option>Sort: Name</option> <option>Sort: ID</option> <option>Sort: Join Time</option> </select>
+        </div>
+       </div>
+       <table>
+        <thead>
+         <tr>
+          <th>Player</th>
+          <th>Job</th>
+          <th>ID</th>
+          <th>Status</th>
+          <th>Ping</th>
+          <th>Actions</th>
+         </tr>
+        </thead>
+        <tbody id="playerTableBody">
+         <tr>
+          <td>
+           <div class="player-info">
+            <div class="player-avatar">
+             JD
+            </div>
+            <div>
+             <div class="player-name">
+              ---
+             </div>
+             <div class="player-id">
+              Steam: ---
+             </div>
+            </div>
+           </div></td>
+          <td>--</td>
+          <td><span class="status-badge online">Online</span></td>
+          <td>-- ms</td>
+          <td>
+           <div class="action-btns"><button class="action-btn" title="View" onclick="showModal('player-actions')"><i class="fas fa-eye"></i></button> <button class="action-btn" title="Teleport" onclick="showToast('success', 'Teleport', 'Teleported to player')"><i class="fas fa-location-arrow"></i></button> <button class="action-btn warning" title="Warn" onclick="showModal('input', 'Warn Player', 'Enter warning reason:')"><i class="fas fa-exclamation-triangle"></i></button> <button class="action-btn danger" title="Kick" onclick="showModal('confirm', 'Kick Player', 'Are you sure you want to kick this player?')"><i class="fas fa-right-from-bracket"></i></button> <button class="action-btn danger" title="Ban" onclick="showModal('input', 'Ban Player', 'Enter ban reason and duration:')"><i class="fas fa-ban"></i></button>
+           </div></td>
+         </tr>
+         <tr>
+          <td>
+           <div class="player-info">
+            <div class="player-avatar">
+             MS
+            </div>
+            <div>
+             <div class="player-name">
+              ---
+             </div>
+             <div class="player-id">
+              Steam: ---
+             </div>
+            </div>
+           </div></td>
+          <td>--</td>
+          <td><span class="status-badge online">Online</span></td>
+          <td>-- ms</td>
+          <td>
+           <div class="action-btns"><button class="action-btn" title="View" onclick="showModal('player-actions')"><i class="fas fa-eye"></i></button> <button class="action-btn" title="Teleport"><i class="fas fa-location-arrow"></i></button> <button class="action-btn warning" title="Warn"><i class="fas fa-exclamation-triangle"></i></button> <button class="action-btn danger" title="Kick"><i class="fas fa-right-from-bracket"></i></button> <button class="action-btn danger" title="Ban"><i class="fas fa-ban"></i></button>
+           </div></td>
+         </tr>
+         <tr>
+          <td>
+           <div class="player-info">
+            <div class="player-avatar">
+             AW
+            </div>
+            <div>
+             <div class="player-name">
+              ---
+             </div>
+             <div class="player-id">
+              Steam: ---
+             </div>
+            </div>
+           </div></td>
+          <td>--</td>
+          <td><span class="status-badge online">Online</span></td>
+          <td>-- ms</td>
+          <td>
+           <div class="action-btns"><button class="action-btn" title="View" onclick="showModal('player-actions')"><i class="fas fa-eye"></i></button> <button class="action-btn" title="Teleport"><i class="fas fa-location-arrow"></i></button> <button class="action-btn warning" title="Warn"><i class="fas fa-exclamation-triangle"></i></button> <button class="action-btn danger" title="Kick"><i class="fas fa-right-from-bracket"></i></button> <button class="action-btn danger" title="Ban"><i class="fas fa-ban"></i></button>
+           </div></td>
+         </tr>
+        </tbody>
+      </table>
+      </div>
+      </div>
+      <div id="playerProfileView" style="display: none;">
+      <div style="margin-bottom: 12px;">
+       <button class="quick-btn" id="backToPlayersBtn"><i class="fas fa-arrow-left"></i> Back to Players</button>
+      </div>
+      <div class="profile-card" id="playerProfileCard">
+       <div class="profile-header">
+        <div class="profile-avatar">
+         <img id="profileAvatarImg" alt="avatar">
+         <i class="fas fa-user" id="profileAvatarFallback"></i>
+        </div>
+        <div>
+         <div class="profile-title" id="profileName">Player - (0)</div>
+         <div class="profile-info-grid">
+          <div class="profile-row"><span><strong>Character Name:</strong> <span id="profileCharacter">-</span></span></div>
+          <div class="profile-row"><span><strong>Citizen ID:</strong> <span id="profileCitizen">-</span></span></div>
+          <div class="profile-row"><span><strong>Gender:</strong> <span id="profileGender">-</span></span></div>
+          <div class="profile-row"><span><strong>Nationality:</strong> <span id="profileNationality">-</span></span></div>
+          <div class="profile-row"><span><strong>Food:</strong> <span id="profileFood">-</span></span></div>
+          <div class="profile-row"><span><strong>Water:</strong> <span id="profileWater">-</span></span></div>
+          <div class="profile-row"><span><strong>Phone Number:</strong> <span id="profilePhone">-</span></span></div>
+          <div class="profile-row"><span><strong>Cash:</strong> <span id="profileCash">-</span></span></div>
+          <div class="profile-row"><span><strong>Bank:</strong> <span id="profileBank">-</span></span></div>
+          <div class="profile-row" style="grid-column: 1 / -1;"><span><strong>Job:</strong> <span id="profileJobDetails">-</span></span></div>
+          <div class="profile-row" style="grid-column: 1 / -1;"><span><strong>Gang:</strong> <span id="profileGangDetails">-</span></span></div>
+          <div class="profile-row" style="grid-column: 1 / -1;"><span><strong>Role:</strong> <span id="profileRole">-</span></span></div>
+         </div>
+        </div>
+       </div>
+       <div class="profile-tabs">
+        <button class="profile-tab active" data-tab="actions">Actions</button>
+        <button class="profile-tab" data-tab="inventory">Inventory</button>
+        <button class="profile-tab" data-tab="vehicles">Vehicles</button>
+        <button class="profile-tab" data-tab="money">Money</button>
+       </div>
+       <div class="profile-panel active" data-panel="actions">
+        <div class="btn-grid">
+         <button class="grid-btn success" data-action="fullHeal"><i class="fas fa-heart"></i> Heal</button>
+         <button class="grid-btn success" data-action="revivePlayer"><i class="fas fa-heart-pulse"></i> Revive</button>
+         <button class="grid-btn warning" data-action="warn"><i class="fas fa-exclamation-triangle"></i> Warn</button>
+         <button class="grid-btn danger" data-action="kick"><i class="fas fa-right-from-bracket"></i> Kick</button>
+         <button class="grid-btn danger" data-action="ban"><i class="fas fa-ban"></i> Ban</button>
+         <button class="grid-btn" data-action="bring"><i class="fas fa-hand-point-right"></i> Bring</button>
+         <button class="grid-btn" data-action="goto"><i class="fas fa-location-arrow"></i> Goto</button>
+         <button class="grid-btn" data-action="freezePlayer"><i class="fas fa-snowflake"></i> Freeze</button>
+         <button class="grid-btn warning" data-action="toggleCuffs"><i class="fas fa-handcuffs"></i> Cuff / Uncuff</button>
+         <button class="grid-btn" data-action="spectatePlayer"><i class="fas fa-eye"></i> Spectate</button>
+         <button class="grid-btn danger" data-action="killPlayer"><i class="fas fa-skull"></i> Kill</button>
+         <button class="grid-btn warning" data-action="makeDrunk"><i class="fas fa-wine-glass"></i> Drunk</button>
+        <button class="grid-btn" data-action="setJob"><i class="fas fa-briefcase"></i> Set Job</button>
+        <button class="grid-btn" data-action="setGang"><i class="fas fa-users-rectangle"></i> Set Gang</button>
+        <button class="grid-btn" data-action="setPermissions"><i class="fas fa-key"></i> Set Perms</button>
+        <button class="grid-btn" data-action="setBucket"><i class="fas fa-bucket"></i> Set Bucket</button>
+        <button class="grid-btn" data-action="changeCharacterName"><i class="fas fa-user-pen"></i> Change Name</button>
+        <button class="grid-btn danger" data-action="deleteCharacter"><i class="fas fa-user-slash"></i> Delete Character</button>
+       </div>
+      </div>
+       <div class="profile-panel" data-panel="inventory">
+        <div class="btn-grid">
+         <button class="grid-btn" data-action="giveItem"><i class="fas fa-gift"></i> Give Item</button>
+         <button class="grid-btn danger" data-action="clearInventory"><i class="fas fa-trash-can"></i> Clear Inv</button>
+        </div>
+        <div style="margin-top: 14px;">
+         <div class="section-title" style="font-size: 13px; margin-bottom: 10px;"><i class="fas fa-box-open"></i> Player Items</div>
+         <div class="item-grid" id="inventoryList"></div>
+        </div>
+       </div>
+       <div class="profile-panel" data-panel="vehicles">
+        <div class="btn-grid">
+         <button class="grid-btn" data-action="spawnVehicle"><i class="fas fa-car"></i> Spawn Veh</button>
+         <button class="grid-btn" data-action="giveVehicle"><i class="fas fa-gift"></i> Give Veh</button>
+         <button class="grid-btn" data-action="fixVehicle"><i class="fas fa-screwdriver-wrench"></i> Fix Veh</button>
+         <button class="grid-btn danger" data-action="deleteVehicle"><i class="fas fa-trash"></i> Delete Veh</button>
+         <button class="grid-btn" data-action="flipVehicle"><i class="fas fa-arrow-rotate-right"></i> Flip Veh</button>
+         <button class="grid-btn" data-action="refuelVehicle"><i class="fas fa-gas-pump"></i> Refuel</button>
+         <button class="grid-btn" data-action="changePlate"><i class="fas fa-rectangle-ad"></i> Plate</button>
+         <button class="grid-btn" data-action="maxMods"><i class="fas fa-rocket"></i> Max Mods</button>
+        </div>
+        <div style="margin-top: 14px;">
+         <div class="section-title" style="font-size: 13px; margin-bottom: 10px;"><i class="fas fa-car-side"></i> Player Vehicles</div>
+         <div class="vehicle-list" id="vehicleList"></div>
+        </div>
+       </div>
+      <div class="profile-panel" data-panel="money">
+        <div class="btn-grid">
+         <button class="grid-btn success" data-action="giveCash"><i class="fas fa-plus"></i> Give Cash</button>
+         <button class="grid-btn success" data-action="giveBank"><i class="fas fa-building-columns"></i> Give Bank</button>
+         <button class="grid-btn danger" data-action="removeMoney"><i class="fas fa-minus"></i> Remove Cash</button>
+        </div>
+       </div>
+      </div>
+      </div>
+     </section><!-- Vehicles Section -->
+     <section class="section" id="vehicles">
+      <div class="panel-grid">
+       <div class="panel">
+        <div class="panel-header">
+         <div class="panel-title">
+          <i class="fas fa-car-side"></i> Vehicle Spawner
+         </div>
+        </div>
+        <div class="panel-body">
+         <div class="input-group"><label>Vehicle Model</label> <input id="vehicleModelInput" type="text" placeholder="Enter vehicle name (e.g., adder)">
+         </div>
+         <div class="input-group"><label>License Plate</label> <input id="vehiclePlateInput" type="text" placeholder="Enter plate text" maxlength="8">
+         </div>
+         <div class="input-group"><label>Player ID</label> <input id="vehicleTargetIdInput" type="number" placeholder="Enter player id" min="1">
+         </div>
+         <div style="display: flex; gap: 10px;"><button class="quick-btn" style="flex: 1;" onclick="showToast('success', 'Spawned', 'Vehicle spawned successfully')"> <i class="fas fa-plus"></i> Spawn Vehicle </button> <button class="quick-btn" style="flex: 1;" onclick="showModal('input', 'Give Vehicle', 'Select player to give vehicle:')"> <i class="fas fa-gift"></i> Give to Player </button>
+         </div>
+        </div>
+       </div>
+       <div class="panel vehicle-actions-panel">
+        <div class="panel-header">
+         <div class="panel-title">
+          <i class="fas fa-wrench"></i> Vehicle Actions
+         </div>
+        </div>
+        <div class="panel-body">
+         <div class="btn-grid vehicle-actions-grid"><button class="grid-btn danger" onclick="showToast('success', 'Deleted', 'Vehicle deleted')"><i class="fas fa-trash"></i> Delete Vehicle</button> <button class="grid-btn success" onclick="showToast('success', 'Fixed', 'Vehicle repaired')"><i class="fas fa-screwdriver-wrench"></i> Fix Vehicle</button> <button class="grid-btn" onclick="showToast('success', 'Refueled', 'Vehicle refueled')"><i class="fas fa-gas-pump"></i> Refuel Vehicle</button> <button class="grid-btn" onclick="showModal('input', 'Change Plate', 'Enter new plate:')"><i class="fas fa-rectangle-ad"></i> Change Plate</button> <button class="grid-btn" onclick="showToast('success', 'Upgraded', 'Max mods applied')"><i class="fas fa-rocket"></i> Max Mods</button> <button class="grid-btn" onclick="showToast('success', 'Success', 'Now in vehicle')"><i class="fas fa-door-open"></i> Sit in Vehicle</button> <button class="grid-btn warning"><i class="fas fa-car-burst"></i> Car Wipe</button>
+         </div>
+        </div>
+       </div>
+       <div class="panel">
+        <div class="panel-header">
+         <div class="panel-title">
+          <i class="fas fa-crosshairs"></i> Laser
+         </div>
+        </div>
+        <div class="panel-body">
+         <div class="btn-grid"><button class="grid-btn" onclick="toggleBtn(this, 'Toggle Laser')"><i class="fas fa-toggle-on"></i> Toggle Laser</button> <button class="grid-btn"><i class="fas fa-compass"></i> Copy Heading</button> <button class="grid-btn"><i class="fas fa-map-pin"></i> Copy Vector2</button> <button class="grid-btn"><i class="fas fa-cube"></i> Copy Vector3</button> <button class="grid-btn"><i class="fas fa-vector-square"></i> Copy Vector4</button>
+         </div>
+        </div>
+       </div>
+      </div>
+     </section><!-- Teleport Section -->
+     <section class="section" id="teleport">
+      <div class="panel-grid">
+       <div class="panel">
+        <div class="panel-header">
+         <div class="panel-title">
+          <i class="fas fa-crosshairs"></i> Coordinate Teleport
+         </div>
+        </div>
+        <div class="panel-body">
+         <div class="input-row">
+          <div class="input-group"><label>X</label> <input type="number" placeholder="0.00" step="0.01">
+          </div>
+          <div class="input-group"><label>Y</label> <input type="number" placeholder="0.00" step="0.01">
+          </div>
+          <div class="input-group"><label>Z</label> <input type="number" placeholder="0.00" step="0.01">
+          </div>
+          <div class="input-group"><label>Heading</label> <input type="number" placeholder="0.00" step="0.01">
+          </div>
+         </div>
+         <div style="display: flex; gap: 10px;"><button class="quick-btn" style="flex: 1;" onclick="showToast('success', 'Teleported', 'Teleported to coordinates')"> <i class="fas fa-location-arrow"></i> Teleport </button> <button class="quick-btn" style="flex: 1;" onclick="showToast('success', 'Copied', 'Current coords copied')"> <i class="fas fa-copy"></i> Copy Current </button>
+         </div>
+        </div>
+       </div>
+       <div class="panel">
+        <div class="panel-header">
+         <div class="panel-title">
+          <i class="fas fa-bookmark"></i> Quick Teleport
+         </div>
+        </div>
+        <div class="panel-body">
+         <div class="btn-grid"><button class="grid-btn" onclick="showToast('success', 'Teleported', 'Teleported to marker')"><i class="fas fa-map-marker-alt"></i> TP to Marker</button> <button class="grid-btn" onclick="showToast('success', 'Teleported', 'Returned to previous location')"><i class="fas fa-undo"></i> TP Back</button> <button class="grid-btn" onclick="showToast('success', 'Teleported', 'Teleported to waypoint')"><i class="fas fa-map-pin"></i> TP to Waypoint</button>
+         </div>
+        </div>
+       </div>
+       <div class="panel" style="grid-column: span 2;">
+        <div class="panel-header">
+         <div class="panel-title">
+          <i class="fas fa-star"></i> Saved Locations
+         </div>
+        </div>
+        <div class="panel-body">
+         <div class="location-list" id="locationList">
+          <div class="empty-state"><i class="fas fa-map-location-dot"></i>
+           <p>No saved locations yet</p>
+          </div>
+         </div>
+         <div style="margin-top: 12px; display: flex; gap: 10px;">
+          <div class="input-group" style="flex: 1; margin-bottom: 0;"><input type="text" placeholder="Location name">
+          </div><button class="quick-btn" onclick="showToast('success', 'Saved', 'Location saved successfully')"> <i class="fas fa-plus"></i> Save Current </button>
+         </div>
+        </div>
+       </div>
+      </div>
+     </section><!-- Economy Section -->
+     <section class="section" id="economy">
+      <div class="panel-grid">
+       <div class="panel">
+        <div class="panel-header">
+         <div class="panel-title">
+          <i class="fas fa-box-open"></i> Inventory Management
+         </div>
+        </div>
+        <div class="panel-body">
+         <div class="btn-grid"><button class="grid-btn" onclick="showModal('input', 'Give All', 'Enter item name and amount:')"><i class="fas fa-gifts"></i> Give Item to All</button> <button class="grid-btn" onclick="showModal('input', 'Open Stash', 'Enter stash ID:')"><i class="fas fa-warehouse"></i> Open Stash</button> <button class="grid-btn" onclick="showToast('success', 'Opened', 'Trunk opened')"><i class="fas fa-car-rear"></i> Open Trunk</button> <button class="grid-btn danger" onclick="showModal('input', 'Clear Offline', 'Enter player identifier:')"><i class="fas fa-user-slash"></i> Clear Inv Offline</button>
+         </div>
+        </div>
+       </div>
+       <div class="panel">
+        <div class="panel-header">
+         <div class="panel-title">
+          <i class="fas fa-coins"></i> Money Management
+         </div>
+        </div>
+        <div class="panel-body">
+         <div class="input-group"><label>Amount</label> <input type="number" placeholder="Enter amount" min="0">
+         </div>
+         <div class="input-group"><label>Money Type</label> <select class="filter-select" style="width: 100%;"> <option>Cash</option> <option>Bank</option> <option>Crypto</option> </select>
+         </div>
+         <div class="btn-grid"><button class="grid-btn success" onclick="showToast('success', 'Added', 'Money added to player')"><i class="fas fa-plus"></i> Give Money</button> <button class="grid-btn success" onclick="showModal('confirm', 'Give All', 'Give money to all players?')"><i class="fas fa-users"></i> Give to All</button> <button class="grid-btn danger" onclick="showToast('success', 'Removed', 'Money removed from player')"><i class="fas fa-minus"></i> Remove Money</button>
+         </div>
+        </div>
+       </div>
+       <div class="panel">
+        <div class="panel-header">
+         <div class="panel-title">
+          <i class="fas fa-heart-pulse"></i> Player Stats
+         </div>
+        </div>
+        <div class="panel-body">
+         <div class="btn-grid"><button class="grid-btn success" onclick="showToast('success', 'Removed', 'Stress removed')"><i class="fas fa-brain"></i> Remove Stress</button> <button class="grid-btn" onclick="showModal('input', 'Set Ammo', 'Enter ammo amount:')"><i class="fas fa-bullseye"></i> Set Ammo</button> <button class="grid-btn success" onclick="showToast('success', 'Healed', 'Player fully healed')"><i class="fas fa-heart"></i> Full Heal</button> <button class="grid-btn" onclick="showToast('success', 'Fed', 'Hunger/thirst restored')"><i class="fas fa-utensils"></i> Feed Player</button>
+         </div>
+        </div>
+       </div>
+      </div>
+     </section><!-- World Controls Section -->
+     <section class="section" id="world">
+      <div class="panel-grid">
+       <div class="panel">
+        <div class="panel-header">
+         <div class="panel-title">
+          <i class="fas fa-clock"></i> Time Control
+         </div>
+        </div>
+        <div class="panel-body">
+         <div class="input-group"><label>Time of Day</label> <input type="range" min="0" max="23" value="12" id="timeSlider" oninput="document.getElementById('timeValue').textContent = this.value + ':00'">
+         </div>
+         <div style="text-align: center; font-size: 24px; font-weight: 600; margin-bottom: 12px;" id="timeValue">
+          12:00
+         </div>
+         <div class="btn-grid"><button class="grid-btn" onclick="document.getElementById('timeSlider').value = 6; document.getElementById('timeValue').textContent = '6:00'"><i class="fas fa-sun"></i> Morning</button> <button class="grid-btn" onclick="document.getElementById('timeSlider').value = 12; document.getElementById('timeValue').textContent = '12:00'"><i class="fas fa-cloud-sun"></i> Noon</button> <button class="grid-btn" onclick="document.getElementById('timeSlider').value = 18; document.getElementById('timeValue').textContent = '18:00'"><i class="fas fa-cloud-moon"></i> Evening</button> <button class="grid-btn" onclick="document.getElementById('timeSlider').value = 0; document.getElementById('timeValue').textContent = '0:00'"><i class="fas fa-moon"></i> Night</button>
+         </div><button class="quick-btn" style="width: 100%; margin-top: 12px;" onclick="showToast('success', 'Changed', 'Time updated')"> <i class="fas fa-check"></i> Apply Time </button>
+        </div>
+       </div>
+       <div class="panel">
+        <div class="panel-header">
+         <div class="panel-title">
+          <i class="fas fa-cloud"></i> Weather Control
+         </div>
+        </div>
+        <div class="panel-body">
+         <div class="btn-grid"><button class="grid-btn" onclick="setWeather(this, 'Clear')"><i class="fas fa-sun"></i> Clear</button> <button class="grid-btn" onclick="setWeather(this, 'Cloudy')"><i class="fas fa-cloud"></i> Cloudy</button> <button class="grid-btn" onclick="setWeather(this, 'Overcast')"><i class="fas fa-smog"></i> Overcast</button> <button class="grid-btn" onclick="setWeather(this, 'Rain')"><i class="fas fa-cloud-rain"></i> Rain</button> <button class="grid-btn" onclick="setWeather(this, 'Thunder')"><i class="fas fa-cloud-bolt"></i> Thunder</button> <button class="grid-btn" onclick="setWeather(this, 'Snow')"><i class="fas fa-snowflake"></i> Snow</button> <button class="grid-btn" onclick="setWeather(this, 'Fog')"><i class="fas fa-water"></i> Fog</button> <button class="grid-btn" onclick="setWeather(this, 'Xmas')"><i class="fas fa-tree"></i> Xmas</button>
+         </div>
+        </div>
+       </div>
+       <div class="panel">
+        <div class="panel-header">
+         <div class="panel-title">
+          <i class="fas fa-lightbulb"></i> World Toggles
+         </div>
+        </div>
+        <div class="panel-body">
+         <div class="btn-grid"><button class="grid-btn warning" onclick="toggleBtn(this, 'Blackout')"><i class="fas fa-power-off"></i> Toggle Blackout</button> <button class="grid-btn" onclick="toggleBtn(this, 'Traffic')"><i class="fas fa-traffic-light"></i> Toggle Traffic</button> <button class="grid-btn" onclick="toggleBtn(this, 'Peds')"><i class="fas fa-person-walking"></i> Toggle Peds</button>
+         </div>
+        </div>
+       </div>
+      </div>
+     </section><!-- Resources Section -->
+     <section class="section" id="devtools">
+     <div class="panel-grid">
+       <div class="panel full-width">
+        <div class="panel-header">
+         <div class="panel-title">
+          <i class="fas fa-chart-area"></i> Resource
+         </div>
+        </div>
+        <div class="panel-body">
+         <div class="table-container" style="margin: 0;">
+          <div class="table-header">
+           <div class="search-box"><i class="fas fa-search"></i> <input type="text" id="resourceSearch" placeholder="Search resources...">
+           </div>
+          </div>
+          <table id="resourceMonitorTable">
+           <thead>
+            <tr>
+             <th>Resource</th>
+             <th>Author</th>
+             <th>Status</th>
+             <th>Actions</th>
+            </tr>
+           </thead>
+           <tbody id="resourceMonitorBody"></tbody>
+          </table>
+         </div>
+        </div>
+       </div>
+      </div>
+     </section><!-- Offline Players Section -->
+     <section class="section" id="offlinePlayers">
+      <div class="table-container">
+       <div class="table-header">
+        <div class="search-box"><i class="fas fa-search"></i> <input type="text" id="offlinePlayersSearch" placeholder="Search by player/license...">
+        </div>
+       </div>
+       <table>
+        <thead>
+         <tr>
+          <th>Player</th>
+          <th>License</th>
+          <th>Characters</th>
+          <th>Actions</th>
+         </tr>
+        </thead>
+        <tbody id="offlinePlayersTableBody"></tbody>
+       </table>
+      </div>
+     </section><!-- Offline Characters Section -->
+     <section class="section" id="offlineCharacters">
+      <div class="table-container">
+       <div class="table-header">
+        <div class="search-box"><i class="fas fa-search"></i> <input type="text" id="offlineCharactersSearch" placeholder="Search by name/citizenid/license...">
+        </div>
+        <div style="display: flex; gap: 10px;">
+         <button class="quick-btn" id="offlineClearFilterBtn"><i class="fas fa-filter-circle-xmark"></i> Clear Filter</button>
+        </div>
+       </div>
+       <table>
+        <thead>
+         <tr>
+          <th>Character</th>
+          <th>Citizen ID</th>
+          <th>License</th>
+          <th>Job</th>
+          <th>Gang</th>
+          <th>Status</th>
+          <th>Actions</th>
+         </tr>
+        </thead>
+        <tbody id="offlineCharactersTableBody"></tbody>
+       </table>
+     </div>
+     <div class="card" style="margin-top: 14px;">
+       <div class="card-header">
+        <div class="card-title"><i class="fas fa-user-gear"></i> Offline Character Management</div>
+        <button class="quick-btn" id="offlineOpenBanListBtn"><i class="fas fa-ban"></i> Open Ban List</button>
+       </div>
+       <div id="offlineInventoryTitle" style="color: var(--text-secondary); margin-bottom: 10px;">Select a character to view inventory.</div>
+       <div class="offline-group-title">Inventory Actions</div>
+       <div class="btn-grid" style="margin-bottom: 12px;">
+        <button class="grid-btn success" id="offlineGiveItemBtn"><i class="fas fa-gift"></i> Give Item</button>
+        <button class="grid-btn warning" id="offlineRemoveItemBtn"><i class="fas fa-minus"></i> Remove Item</button>
+        <button class="grid-btn warning" id="offlineClearInvBtn"><i class="fas fa-box-open"></i> Clear Inventory</button>
+       </div>
+       <div class="offline-group-title">Economy</div>
+       <div class="btn-grid" style="margin-bottom: 12px;">
+        <button class="grid-btn success" id="offlineMoneyBtn"><i class="fas fa-coins"></i> Money (set/add/remove)</button>
+       </div>
+       <div class="offline-group-title">Character Data</div>
+       <div class="btn-grid" style="margin-bottom: 12px;">
+        <button class="grid-btn" id="offlineSetJobBtn"><i class="fas fa-briefcase"></i> Set Job</button>
+        <button class="grid-btn" id="offlineSetGangBtn"><i class="fas fa-users"></i> Set Gang</button>
+       <button class="grid-btn" id="offlineSetNameBtn"><i class="fas fa-user-pen"></i> Change Name</button>
+       <button class="grid-btn" id="offlineMetaBtn"><i class="fas fa-sliders"></i> Set Metadata</button>
+        <button class="grid-btn danger" id="offlineBanLicenseBtn"><i class="fas fa-ban"></i> Ban License</button>
+        <button class="grid-btn danger" id="offlineDeleteCharBtn"><i class="fas fa-user-slash"></i> Delete Character</button>
+       </div>
+       <div id="offlineInventoryList" class="item-grid"></div>
+      </div>
+     </section><!-- Offline Ban List Section -->
+     <section class="section" id="offlineBans">
+      <div class="table-container">
+       <div class="table-header">
+        <div class="search-box"><i class="fas fa-search"></i> <input type="text" id="offlineBansSearch" placeholder="Search by license/reason/admin...">
+        </div>
+       </div>
+       <table>
+        <thead>
+         <tr>
+          <th>License</th>
+          <th>Reason</th>
+          <th>Admin</th>
+          <th>Date</th>
+          <th>Actions</th>
+         </tr>
+        </thead>
+        <tbody id="offlineBansTableBody"></tbody>
+       </table>
+      </div>
+     </section><!-- Logs Section -->
+     <section class="section" id="logs">
+      <div class="table-container">
+       <div class="table-header">
+        <div class="search-box"><i class="fas fa-search"></i> <input type="text" placeholder="Search logs...">
+        </div>
+        <div style="display: flex; gap: 10px;"><select class="filter-select"> <option>All Actions</option> <option>Bans</option> <option>Kicks</option> <option>Warns</option> <option>Teleports</option> </select> <select class="filter-select"> <option>Last 24 Hours</option> <option>Last 7 Days</option> <option>Last 30 Days</option> <option>All Time</option> </select>
+        </div>
+       </div>
+       <div id="logsContainer">
+        <div class="empty-state"><i class="fas fa-scroll"></i>
+         <p>No logs to display</p>
+         <p style="font-size: 11px; margin-top: 8px;">Logs will appear here when actions are performed</p>
+        </div>
+       </div>
+      </div>
+     </section>
+    </div>
+   </main>
+  </div><!-- Modal -->
+  <div class="modal-overlay" id="modalOverlay">
+   <div class="modal">
+    <div class="modal-header">
+     <div class="modal-title"><i class="fas fa-exclamation-circle" id="modalIcon"></i> <span id="modalTitle">Confirm Action</span>
+     </div><button class="modal-close" onclick="closeModal()"> <i class="fas fa-times"></i> </button>
+    </div>
+    <div class="modal-body" id="modalBody">
+     <p id="modalMessage">Are you sure you want to perform this action?</p>
+     <div class="input-group hidden" id="modalSelectGroup"><label id="modalSelectLabel">Select</label> <select id="modalSelect" class="filter-select" style="width: 100%;"></select>
+     </div>
+     <div class="input-group hidden" id="modalInputGroup"><label id="modalInputLabel">Input</label> <input type="text" id="modalInput" placeholder="Enter value...">
+     </div>
+    </div>
+    <div class="modal-footer"><button class="modal-btn cancel" onclick="closeModal()">Cancel</button> <button class="modal-btn confirm" id="modalConfirm" onclick="confirmModal()">Confirm</button>
+    </div>
+   </div>
+  </div><!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+  <script>
+    const defaultConfig = {
+      server_name: 'My FiveM Server',
+      admin_role: 'Super Admin',
+      primary_color: '#3b82f6',
+      secondary_color: '#2563eb',
+      text_color: '#f1f5f9',
+      bg_color: '#0a0a0f',
+      accent_color: '#10b981'
+    };
+    
+    let config = { ...defaultConfig };
+    
+    // Initialize Elements SDK
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange: async (newConfig) => {
+          config = { ...defaultConfig, ...newConfig };
+          applyConfig();
+        },
+        mapToCapabilities: (cfg) => ({
+          recolorables: [
+            {
+              get: () => cfg.primary_color || defaultConfig.primary_color,
+              set: (value) => {
+                cfg.primary_color = value;
+                window.elementSdk.setConfig({ primary_color: value });
+              }
+            },
+            {
+              get: () => cfg.secondary_color || defaultConfig.secondary_color,
+              set: (value) => {
+                cfg.secondary_color = value;
+                window.elementSdk.setConfig({ secondary_color: value });
+              }
+            },
+            {
+              get: () => cfg.text_color || defaultConfig.text_color,
+              set: (value) => {
+                cfg.text_color = value;
+                window.elementSdk.setConfig({ text_color: value });
+              }
+            },
+            {
+              get: () => cfg.bg_color || defaultConfig.bg_color,
+              set: (value) => {
+                cfg.bg_color = value;
+                window.elementSdk.setConfig({ bg_color: value });
+              }
+            },
+            {
+              get: () => cfg.accent_color || defaultConfig.accent_color,
+              set: (value) => {
+                cfg.accent_color = value;
+                window.elementSdk.setConfig({ accent_color: value });
+              }
+            }
+          ],
+          borderables: [],
+          fontEditable: undefined,
+          fontSizeable: undefined
+        }),
+        mapToEditPanelValues: (cfg) => new Map([
+          ['server_name', cfg.server_name || defaultConfig.server_name],
+          ['admin_role', cfg.admin_role || defaultConfig.admin_role]
+        ])
+      });
+    }
+    
+    function applyConfig() {
+      const serverName = config.server_name || defaultConfig.server_name;
+      const adminRole = config.admin_role || defaultConfig.admin_role;
+      const primaryColor = config.primary_color || defaultConfig.primary_color;
+      const secondaryColor = config.secondary_color || defaultConfig.secondary_color;
+      const textColor = config.text_color || defaultConfig.text_color;
+      const bgColor = config.bg_color || defaultConfig.bg_color;
+      const accentColor = config.accent_color || defaultConfig.accent_color;
+      
+      const isNui = typeof GetParentResourceName === 'function';
+      if (!isNui) {
+        document.getElementById('serverName').textContent = serverName;
+        document.getElementById('adminRoleDisplay').textContent = adminRole;
+      }
+      
+      document.documentElement.style.setProperty('--accent-primary', primaryColor);
+      document.documentElement.style.setProperty('--accent-secondary', secondaryColor);
+      document.documentElement.style.setProperty('--text-primary', textColor);
+      document.documentElement.style.setProperty('--bg-primary', bgColor);
+      document.documentElement.style.setProperty('--success', accentColor);
+    }
+    
+    // Navigation
+    const navItems = document.querySelectorAll('.nav-item');
+    const sections = document.querySelectorAll('.section');
+    
+    navItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const sectionId = item.dataset.section;
+        navigateTo(sectionId);
+      });
+    });
+    
+    function navigateTo(sectionId) {
+      navItems.forEach(nav => nav.classList.remove('active'));
+      sections.forEach(sec => sec.classList.remove('active'));
+      
+      const navItem = document.querySelector(`[data-section="${sectionId}"]`);
+      const section = document.getElementById(sectionId);
+      
+      if (navItem && section) {
+        navItem.classList.add('active');
+        section.classList.add('active');
+        
+        const titles = {
+          dashboard: 'Dashboard',
+          players: 'Player Management',
+          vehicles: 'Vehicle Management',
+          server: 'Server Controls',
+          teleport: 'Teleportation',
+          economy: 'Economy & Inventory',
+          world: 'World Controls',
+          devtools: 'Resources',
+          offlinePlayers: 'Offline Players',
+          offlineCharacters: 'Offline Characters',
+          offlineBans: 'Offline Ban List',
+          logs: 'Action Logs'
+        };
+        
+        document.getElementById('pageTitle').textContent = titles[sectionId] || 'Admin Panel';
+      }
+    }
+    
+    // Close button (animation handled in app.js)
+    document.getElementById('closeBtn').addEventListener('click', () => {
+      const container = document.querySelector('.admin-container');
+      container.classList.add('closing');
+      setTimeout(() => {
+        container.style.display = 'none';
+      }, 260);
+    });
+    
+    // ESC key handler
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const modal = document.getElementById('modalOverlay');
+        if (modal.classList.contains('active')) {
+          closeModal();
+        } else {
+          document.getElementById('closeBtn').click();
+        }
+      }
+    });
+    
+    // Modal functions
+    function showModal(type, title, message) {
+      const overlay = document.getElementById('modalOverlay');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalMessage = document.getElementById('modalMessage');
+      const modalInputGroup = document.getElementById('modalInputGroup');
+      const modalSelectGroup = document.getElementById('modalSelectGroup');
+      const modalConfirm = document.getElementById('modalConfirm');
+      const modalIcon = document.getElementById('modalIcon');
+      
+      modalTitle.textContent = title;
+      modalMessage.textContent = message;
+      
+      if (type === 'input') {
+        modalInputGroup.classList.remove('hidden');
+        modalSelectGroup.classList.add('hidden');
+        document.getElementById('modalInput').value = '';
+        modalIcon.className = 'fas fa-edit';
+      } else if (type === 'select') {
+        modalSelectGroup.classList.remove('hidden');
+        modalInputGroup.classList.add('hidden');
+        modalIcon.className = 'fas fa-list';
+      } else if (type === 'select_input') {
+        modalSelectGroup.classList.remove('hidden');
+        modalInputGroup.classList.remove('hidden');
+        document.getElementById('modalInput').value = '';
+        modalIcon.className = 'fas fa-list';
+      } else {
+        modalSelectGroup.classList.add('hidden');
+        modalInputGroup.classList.add('hidden');
+        modalIcon.className = 'fas fa-exclamation-circle';
+      }
+      
+      if (type === 'confirm' && (title.includes('Ban') || title.includes('Kick') || title.includes('Kill') || title.includes('Explode') || title.includes('Clear') || title.includes('Restart'))) {
+        modalConfirm.classList.add('danger');
+      } else {
+        modalConfirm.classList.remove('danger');
+      }
+      
+      overlay.classList.add('active');
+    }
+    
+    function closeModal() {
+      document.getElementById('modalOverlay').classList.remove('active');
+    }
+    
+    function confirmModal() {
+      closeModal();
+      showToast('success', 'Action Complete', 'The action was performed successfully');
+    }
+    
+    // Toast notifications
+    function showToast(type, title, message) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      
+      const icons = {
+        success: 'fa-check',
+        warning: 'fa-exclamation-triangle',
+        error: 'fa-times-circle'
+      };
+      
+      toast.innerHTML = `
+        <div class="toast-icon">
+          <i class="fas ${icons[type]}"></i>
+        </div>
+        <div class="toast-content">
+          <div class="toast-title">${title}</div>
+          <div class="toast-message">${message}</div>
+        </div>
+      `;
+      
+      container.appendChild(toast);
+      
+      setTimeout(() => toast.classList.add('show'), 10);
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+    
+    // Toggle button state
+    function toggleBtn(btn, name) {
+      btn.classList.toggle('active');
+      const isActive = btn.classList.contains('active');
+      
+      if (isActive) {
+        btn.style.background = 'rgba(59, 130, 246, 0.3)';
+        btn.style.borderColor = 'rgba(59, 130, 246, 0.5)';
+        btn.style.color = 'var(--accent-primary)';
+        showToast('success', name, 'Enabled');
+      } else {
+        btn.style.background = '';
+        btn.style.borderColor = '';
+        btn.style.color = '';
+        showToast('warning', name, 'Disabled');
+      }
+    }
+    
+    // Weather selection
+    function setWeather(btn, weather) {
+      document.querySelectorAll('#world .btn-grid .grid-btn').forEach(b => {
+        b.style.background = '';
+        b.style.borderColor = '';
+        b.style.color = '';
+      });
+      
+      btn.style.background = 'rgba(59, 130, 246, 0.3)';
+      btn.style.borderColor = 'rgba(59, 130, 246, 0.5)';
+      btn.style.color = 'var(--accent-primary)';
+      
+      showToast('success', 'Weather', `Changed to ${weather}`);
+    }
+    
+    // Initialize
+    applyConfig();
+  </script>
+  <script src="app.js"></script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9cc4efaa329c0115',t:'MTc3MDgyNDMzNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
